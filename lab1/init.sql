@@ -1,8 +1,8 @@
 CREATE TABLE Users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username VARCHAR(50) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE Products (
@@ -18,7 +18,7 @@ CREATE TABLE Products (
 
 CREATE TABLE Categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Orders (
@@ -27,7 +27,7 @@ CREATE TABLE Orders (
     order_data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total_price NUMERIC(10, 2) NOT NULL,
 
-    FOREIGN KEY(user_id) RFERENCES Users(id)
+    FOREIGN KEY(user_id) REFERENCES Users(id)
 );
 
 CREATE TABLE Order_Items (
