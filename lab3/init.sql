@@ -31,7 +31,7 @@ CREATE TABLE Orders (
 );
 
 CREATE TABLE Order_Items (
-    order_item_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
     order_id INTEGER,
     product_id INTEGER,
     quantity INTEGER NOT NULL,
