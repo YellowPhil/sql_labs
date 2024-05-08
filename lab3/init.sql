@@ -36,8 +36,8 @@ CREATE TABLE Order_Items (
     product_id INTEGER,
     quantity INTEGER NOT NULL,
 
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
-    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+    FOREIGN KEY (order_id) REFERENCES Orders(id),
+    FOREIGN KEY (product_id) REFERENCES Products(id)
 );
 
 CREATE TABLE Addresses (
