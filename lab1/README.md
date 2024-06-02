@@ -1,3 +1,25 @@
+### Правки
+Слегка переработаны таблицы
+
+1) Убрано поле `total_price` из таблицы `Orders`, поскольку суммарная стоимость заказа может быть посчитана запросом вроде этого:
+```sql
+SELECT SUM(Products.price * Order_Items.quantity) AS total_price
+FROM Order_Items
+JOIN Products ON Order_Items.product_id = Products.id
+WHERE Order_Items.order_id = <order_id>;
+```
+2) Заказ может содержать произвольное количество вещей, поскольку в таблице Order_Items содежится как поле `product_id`, так и поле `quantity`.
+
+Пример запроса, который отобразит все вещи из заказа с указанным `id`
+```sql
+SELECT Orders.id, Products.name, Order_Items.quantity
+FROM Orders
+JOIN Order_Items ON Orders.id = Order_Items.order_id
+JOIN Products ON Order_Items.product_id = Products.id
+```
+
+3) Для получения отношений, находящихся в третьей нормальной формой была выделена таблица `Addresses`.
+
 # НИЯУ МИФИ. ИИКС. Лабораторная работа №1. Давыдов М., Б21-505. 2024.
 
 ## Обзор предметной области

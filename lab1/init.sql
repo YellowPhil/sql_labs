@@ -24,20 +24,19 @@ CREATE TABLE Categories (
 CREATE TABLE Orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
-    order_data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    total_price NUMERIC(10, 2) NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY(user_id) REFERENCES Users(id)
 );
 
 CREATE TABLE Order_Items (
-    order_item_id INTEGER AUTO_INCREMENT PRIMARY KEY,
     order_id INTEGER,
     product_id INTEGER,
     quantity INTEGER NOT NULL,
 
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
-    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+    PRIMARY KEY (order_id, product_id),
+    FOREIGN KEY (order_id) REFERENCES Orders(id),
+    FOREIGN KEY (product_id) REFERENCES Products(id)
 );
 
 CREATE TABLE Addresses (
@@ -60,3 +59,4 @@ CREATE TABLE Payments (
 
     FOREIGN KEY (order_id) REFERENCES Orders(id)
 );
+
