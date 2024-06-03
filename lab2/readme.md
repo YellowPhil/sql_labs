@@ -1,3 +1,55 @@
+## Правки
+Для каждого месяца, по которому есть информация в Orders, выведите, насколько сумма заказов в этом месяце изменилась по сравнению с суммой заказов в прошлом месяце. Если информации по месяцу нет, считать сумму заказов = 0. 
+
+1) Для группирования суммы заказов по месяцам можно воспользоваться данным запросом:
+```sql
+ SELECT strftime('%Y-%m', order_date) AS month,
+ SUM((
+        SELECT SUM(Products.price * Order_Items.quantity)
+        FROM Order_Items
+        JOIN Products ON Order_Items.product_id = Products.id
+        WHERE Order_Items.order_id = Orders.id
+    )) as total
+    FROM Orders
+    GROUP BY month
+```
+
+2) Используя полученный результат можно посчитать разницу с предыдущим месяцем, обратившись по соответствующим месяцам:
+
+```sql 
+WITH MonthlyOrderSum AS (
+SELECT strftime('%Y-%m', order_date) AS month,
+ SUM((
+        SELECT SUM(Products.price * Order_Items.quantity)
+        FROM Order_Items
+        JOIN Products ON Order_Items.product_id = Products.id
+        WHERE Order_Items.order_id = Orders.id
+    )) as total
+    FROM Orders
+    GROUP BY month
+)
+SELECT 
+    mos.month,
+    mos.total,
+    COALESCE((
+        SELECT mos2.total 
+        FROM MonthlyOrderSum mos2 
+        WHERE date(mos.month, '-1 month') = mos2.month
+    ), 0) AS previous_month_sum,
+    mos.total - COALESCE((
+        SELECT mos2.total 
+        FROM MonthlyOrderSum mos2 
+        WHERE date(mos.month, '-1 month') = mos2.month
+    ), 0) AS change
+FROM MonthlyOrderSum mos;
+```
+### Результат выполнения
+![](./assets/select_by_month_diff.png)
+
+### Результат содержимое таблицы Orders
+![](./assets/select_all_from_orders.png)
+
+
 # НИЯУ МИФИ. ИИКС. Лабораторная работа №2. Давыдов М, Б21-505. 2024.
 
 ## Генерация тестовых данных
