@@ -1,45 +1,3 @@
-CREATE TABLE Users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(100) NOT NULL,
-    password_hash VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE Products (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    category_id INTEGER,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    price NUMERIC(10, 2) NOT NULL,
-    quantity INTEGER NOT NULL,
-
-    FOREIGN KEY (category_id) REFERENCES Categories(id)
-);
-
-CREATE TABLE Categories (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE Orders (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    order_data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    total_price NUMERIC(10, 2) NOT NULL,
-
-    FOREIGN KEY(user_id) REFERENCES Users(id)
-);
-
-CREATE TABLE Order_Items (
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    order_id INTEGER,
-    product_id INTEGER,
-    quantity INTEGER NOT NULL,
-
-    FOREIGN KEY (order_id) REFERENCES Orders(id),
-    FOREIGN KEY (product_id) REFERENCES Products(id)
-);
-
 CREATE TABLE Addresses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
@@ -50,7 +8,26 @@ CREATE TABLE Addresses (
 
     FOREIGN KEY(user_id) REFERENCES Users(id)
 );
+CREATE TABLE Categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL
+);
+CREATE TABLE Orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
+    FOREIGN KEY(user_id) REFERENCES Users(id)
+);
+CREATE TABLE Order_Items (
+    order_id INTEGER,
+    product_id INTEGER,
+    quantity INTEGER NOT NULL,
+
+    PRIMARY KEY (order_id, product_id),
+    FOREIGN KEY (order_id) REFERENCES Orders(id),
+    FOREIGN KEY (product_id) REFERENCES Products(id)
+);
 CREATE TABLE Payments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     order_id INTEGER,
@@ -60,72 +37,138 @@ CREATE TABLE Payments (
 
     FOREIGN KEY (order_id) REFERENCES Orders(id)
 );
+CREATE TABLE Products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category_id INTEGER,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price NUMERIC(10, 2) NOT NULL,
+    quantity INTEGER NOT NULL,
 
--- Users
-INSERT INTO Users (username, email, password_hash)
-VALUES 
-    ('john_doe', 'john.doe@example.com', 'hash1'),
-    ('jane_smith', 'jane.smith@example.com', 'hash2'),
-    ('alex_johnson', 'alex.johnson@example.com', 'hash3'),
-    ('emily_brown', 'emily.brown@example.com', 'hash4'),
-    ('michael_clark', 'michael.clark@example.com', 'hash5');
+    FOREIGN KEY (category_id) REFERENCES Categories(id)
+);
+CREATE TABLE Users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL
+);
 
--- Categories
-INSERT INTO Categories (name)
-VALUES 
-    ('Electronics'),
-    ('Clothing'),
-    ('Books'),
-    ('Home & Kitchen'),
-    ('Sports');
+INSERT INTO Users (username, email, password_hash) VALUES
+('john_doe', 'john@example.com', 'hashed_password_123'),
+('jane_smith', 'jane@example.com', 'hashed_password_456'),
+('alice_wonderland', 'alice@example.com', 'hashed_password_789'),
+('bob_miller', 'bob@example.com', 'hashed_password_abc'),
+('emma_jones', 'emma@example.com', 'hashed_password_def');
 
--- Products
-INSERT INTO Products (category_id, name, description, price, quantity)
-VALUES 
-    (1, 'Laptop', 'High-performance laptop with SSD', 1200.00, 50),
-    (1, 'Smartphone', 'Latest smartphone model with HD display', 800.00, 100),
-    (2, 'T-shirt', 'Cotton t-shirt with trendy design', 25.00, 200),
-    (2, 'Jeans', 'Classic denim jeans for everyday wear', 50.00, 150),
-    (3, 'Novel', 'Bestseller novel by famous author', 15.00, 300),
-    (4, 'Coffee Maker', 'Automatic coffee maker for home use', 75.00, 80),
-    (5, 'Football', 'Official size and weight football', 20.00, 50),
-    (5, 'Yoga Mat', 'Non-slip yoga mat for comfortable workouts', 30.00, 100);
+INSERT INTO Categories (name) VALUES
+('Electronics'),
+('Clothing'),
+('Books'),
+('Home & Garden'),
+('Sports');
 
--- Orders
-INSERT INTO Orders (user_id, total_price)
-VALUES 
-    (1, 200.00),
-    (2, 120.00),
-    (3, 150.00),
-    (4, 75.00),
-    (5, 100.00);
+INSERT INTO Products (category_id, name, description, price, quantity) VALUES
+(1, 'Smartphone', 'Latest smartphone model', 799.99, 20),
+(2, 'T-shirt', 'Cotton T-shirt', 19.99, 50),
+(3, 'The Great Gatsby', 'Classic novel by F. Scott Fitzgerald', 12.99, 30),
+(4, 'Lawn mower', 'Electric lawn mower', 199.99, 10),
+(5, 'Football', 'Official size and weight football', 29.99, 25);
 
--- Order_Items
-INSERT INTO Order_Items (order_id, product_id, quantity)
-VALUES 
-    (1, 1, 1),
-    (1, 2, 2),
-    (2, 3, 3),
-    (2, 4, 1),
-    (3, 5, 2),
-    (3, 6, 1),
-    (4, 7, 1),
-    (5, 8, 3);
+INSERT INTO Addresses (user_id, street, city, country_code, postal_code) VALUES
+(1, '123 Main St', 'New York', 'US', '10001'),
+(2, '456 Elm St', 'Los Angeles', 'US', '90001'),
+(3, '789 Oak St', 'Chicago', 'US', '60601'),
+(4, '101 Pine St', 'San Francisco', 'US', '94101'),
+(5, '202 Maple St', 'Seattle', 'US', '98101');
 
--- Addresses
-INSERT INTO Addresses (user_id, street, city, country_code, postal_code)
-VALUES 
-    (1, '123 Main St', 'New York', 'US', '10001'),
-    (2, '456 Elm St', 'London', 'UK', 'SW1A 1AA'),
-    (3, '789 Oak St', 'Toronto', 'CA', 'M5H 2N2'),
-    (4, '101 Pine St', 'Sydney', 'AU', '2000'),
-    (5, '202 Maple St', 'Berlin', 'DE', '10115');
+INSERT INTO Orders (user_id, order_date) VALUES
+(1, '2024-06-01 10:00:00'),
+(2, '2024-06-01 11:00:00'),
+(3, '2024-06-01 12:00:00'),
+(4, '2024-06-02 09:00:00'),
+(5, '2024-06-02 10:30:00');
 
--- Payments
-INSERT INTO Payments (order_id, payment_amount, payment_method, transaction_status)
-VALUES 
-    (1, 200.00, 'Credit Card', 'Success'),
-    (2, 120.00, 'PayPal', 'Success'),
-    (3, 150.00, 'Stripe', 'Success'),
-    (4, 75.00, 'Credit Card', 'Success'),
-    (5, 100.00, 'PayPal', 'Success');
+INSERT INTO Order_Items (order_id, product_id, quantity) VALUES
+(1, 1, 2),
+(1, 3, 1),
+(2, 2, 3),
+(2, 4, 1),
+(3, 5, 2),
+(4, 1, 1),
+(4, 3, 1),
+(4, 5, 3);
+
+INSERT INTO Payments (order_id, payment_amount, payment_method, transaction_status) VALUES
+(1, 1812.96, 'Credit Card', 'Completed'),
+(2, 89.96, 'PayPal', 'Completed'),
+(3, 89.97, 'Credit Card', 'Completed'),
+(4, 1789.94, 'Debit Card', 'Completed');
+
+
+-- Insert new users
+INSERT INTO Users (username, email, password_hash) VALUES
+('user1', 'user1@example.com', 'hash1'),
+('user2', 'user2@example.com', 'hash2'),
+('user3', 'user3@example.com', 'hash3'),
+('user4', 'user4@example.com', 'hash4'),
+('user5', 'user5@example.com', 'hash5');
+
+-- Insert addresses for these users
+INSERT INTO Addresses (user_id, street, city, country_code, postal_code) VALUES
+(1, '123 Main St', 'CityA', 'UK', '12345'),
+(2, '456 Maple St', 'CityB', 'UK', '67890'),
+(3, '789 Oak St', 'CityC', 'CAN', 'A1B2C3'),
+(4, '101 Pine St', 'CityD', 'CAN', 'D4E5F6'),
+(5, '202 Birch St', 'CityE', 'MEX', '98765');
+
+-- Insert categories
+INSERT INTO Categories (name) VALUES
+('Electronics'),
+('Books'),
+('Clothing');
+
+-- Insert products
+INSERT INTO Products (category_id, name, description, price, quantity) VALUES
+(1, 'Laptop', 'High performance laptop', 999.99, 50),
+(1, 'Smartphone', 'Latest model smartphone', 699.99, 100),
+(2, 'Novel', 'Bestselling novel', 19.99, 200),
+(3, 'T-shirt', 'Comfortable cotton t-shirt', 9.99, 300);
+
+-- Insert orders for different months and countries
+INSERT INTO Orders (user_id, order_date) VALUES
+(1, '2023-01-15'),
+(2, '2023-01-20'),
+(3, '2023-02-10'),
+(4, '2023-02-15'),
+(5, '2023-03-05'),
+(1, '2023-03-10'),
+(2, '2023-04-20'),
+(3, '2023-04-25'),
+(4, '2023-05-15'),
+(5, '2023-05-20'),
+(1, '2023-06-05'),
+(2, '2023-06-10'),
+(3, '2023-07-15'),
+(4, '2023-07-20'),
+(5, '2023-08-05'),
+(1, '2023-08-10'),
+(2, '2023-09-15'),
+(3, '2023-09-20');
+
+-- Insert order items for these orders
+INSERT INTO Order_Items (order_id, product_id, quantity) VALUES
+(5, 1, 1),
+(6, 2, 2),
+(7, 3, 3),
+(8, 4, 4),
+(9, 1, 1),
+(10, 2, 2),
+(11, 3, 3),
+(12, 4, 4),
+(13, 1, 1),
+(14, 2, 2),
+(15, 3, 3),
+(16, 4, 4),
+(17, 1, 1),
+(18, 2, 2);
