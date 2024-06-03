@@ -83,11 +83,11 @@ INSERT INTO Addresses (user_id, street, city, country_code, postal_code) VALUES
 (5, '202 Maple St', 'Seattle', 'US', '98101');
 
 INSERT INTO Orders (user_id, order_date) VALUES
-(1, '2024-06-01 10:00:00'),
-(2, '2024-06-01 11:00:00'),
-(3, '2024-06-01 12:00:00'),
-(4, '2024-06-02 09:00:00'),
-(5, '2024-06-02 10:30:00');
+(1, '2024-06-01'),
+(2, '2024-06-01'),
+(3, '2024-06-01'),
+(4, '2024-06-02'),
+(5, '2024-06-02');
 
 INSERT INTO Order_Items (order_id, product_id, quantity) VALUES
 (1, 1, 2),
