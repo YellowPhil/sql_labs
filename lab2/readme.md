@@ -3,7 +3,7 @@
 
 1) Для группирования суммы заказов по месяцам можно воспользоваться данным запросом:
 ```sql
- SELECT strftime('%Y-%m', order_date) AS month,
+ SELECT order_date,
  SUM((
         SELECT SUM(Products.price * Order_Items.quantity)
         FROM Order_Items
@@ -11,38 +11,41 @@
         WHERE Order_Items.order_id = Orders.id
     )) as total
     FROM Orders
-    GROUP BY month
+    GROUP BY strftime('%Y-%m', order_date)
 ```
 
 2) Используя полученный результат можно посчитать разницу с предыдущим месяцем, обратившись по соответствующим месяцам:
 (Функция COALESCE была НАГУГЛЕНА)
-
 ```sql 
 WITH MonthlyOrderSum AS (
-SELECT strftime('%Y-%m', order_date) AS month,
- SUM((
+SELECT order_date,
+    SUM((
         SELECT SUM(Products.price * Order_Items.quantity)
         FROM Order_Items
         JOIN Products ON Order_Items.product_id = Products.id
         WHERE Order_Items.order_id = Orders.id
     )) as total
     FROM Orders
-    GROUP BY month
+    GROUP BY strftime('%Y-%m', order_date)
+),
+PreviousMonthSum AS (
+  SELECT 
+  COALESCE((
+    SELECT mos2.total
+    FROM MonthlyOrderSum mos2
+    WHERE strftime('%Y-%m', mos1.order_date, '-1 month') = strftime('%Y-%m', mos2.order_date)
+    ), 0) AS sum
+  FROM MonthlyOrderSum mos1
 )
 SELECT 
-    mos.month,
-    mos.total,
-    COALESCE((
-        SELECT mos2.total 
-        FROM MonthlyOrderSum mos2 
-        WHERE date(mos.month, '-1 month') = mos2.month
-    ), 0) AS previous_month_sum,
-    mos.total - COALESCE((
-        SELECT mos2.total 
-        FROM MonthlyOrderSum mos2 
-        WHERE date(mos.month, '-1 month') = mos2.month
-    ), 0) AS change
-FROM MonthlyOrderSum mos;
+  strftime('%Y-%m', mos.order_date) as month,
+  mos.total,
+  PreviousMonthSum.sum as previous_month_sum,
+  mos.total - PreviousMonthSum.sum AS change
+FROM
+	MonthlyOrderSum mos
+JOIN
+	PreviousMonthSum
 ```
 ### Результат выполнения
 ![](./assets/select_by_month_diff.png)
